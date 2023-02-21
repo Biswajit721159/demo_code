@@ -5,60 +5,33 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 # Create your views here.
 
-data = Product.objects.all()
-product = {
-    'product': data
-}
-
 
 def index(request):
+    return render(request, "shop/Admin_login.html")
 
-    return render(request, "shop/dashboard.html", product)
+def connect(request):
+    if request.method == "POST":
+        username=request.POST.get('username')
+        password=request.POST.get('password')
+        user = authenticate(username=username, password=password)
+        if user is not None:
+            login(request, user)
+            return redirect('/dashboard')
+        else:
+            return HttpResponse("unsuceessfull login")
+    return HttpResponse("Something is wrong")
 
-
-def about(request):
-    return HttpResponse("we are in about")
-
-
-def contact(request):
-    return HttpResponse("we are in contact")
-
-
-def tracker(request):
-    return HttpResponse("we are in tracker")
-
-
-def search(request):
-    return HttpResponse("we are in search")
-
-
-def productview(request):
-    return HttpResponse("we are in productview")
-
-
-def checkout(request):
-    return HttpResponse("we are in checkout")
-
-
-def base(request):
-    return render(request, "shop/base.html")
-
-
-def submit(request):
-    photo = request.POST.get('photo')
-    data = Photo(
-        photo=photo
-    )
-    data.save()
-    return redirect('submit/show', "show.html")
-
-
-def show(request):
-    data = Photo.objects.all()
-    product = {
-        'product': data
+def dashboard(request):
+    user=User.objects.all()
+    context={
+        'Total_admin':len(user)
     }
-    return render(request, "shop/show.html", product)
+    return render(request,"shop/dashboard.html",context)
+
+def handellogout(request):
+    logout(request)
+    return redirect('/dashboard')
+
 
 
 def handelsignup(request):
@@ -93,7 +66,6 @@ def handelsignup(request):
     else:
         return HttpResponse("404 page not found")
 
-
 def handellogin(request):
     if request.method == "POST":
         username = request.POST.get('username')
@@ -109,44 +81,3 @@ def handellogin(request):
         return HttpResponse("404 page not found")
 
 
-def handellogout(request):
-    logout(request)
-    return redirect('/')
-
-
-def orderdetail(request, id, username):
-    data = order.objects.all()
-    if len(username) != 0:
-        count = 0
-        for i in data:
-            if i.username == username and i.orderid == id:
-                count+=1
-        print(count)        
-        if count==0:
-            add = order(
-                username=username,
-                orderid=id
-            )
-            add.save()
-            count=0
-            return redirect('/')     
-        else:
-            return HttpResponse("this product is already in your bag")   
-    else:
-        return HttpResponse("Please log in first---")
-
-
-def orderhistory(request, username):
-    if len(username) != 0:
-        data = order.objects.all()
-        product = []
-        for i in data:
-            if i.username == username:
-                product.append(i)
-        context = {'product': product}
-        return render(request, "shop/show.html", context)
-    else:
-        return HttpResponse("wait bro")
-
-def demo(request):
-    return HttpResponse("just for demo")
