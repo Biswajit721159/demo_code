@@ -10,6 +10,7 @@ urlpatterns = [
     # path('signup',views.handelsignup,name="signup"),
     # path('login',views.handellogin,name="login"),
     path('logout',views.handellogout,name="logout"),
+    path('solve',views.solve,name="solve"),
     # path('demo',views.demo,name="demo"),
     # path('')
 ]

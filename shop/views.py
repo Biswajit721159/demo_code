@@ -1,7 +1,8 @@
 from django.shortcuts import render, HttpResponse, redirect
-from .models import Product, Photo, order
+# from .models import Product, Photo, order
 from django.contrib.auth. models import User
 from django.contrib import messages
+import requests
 from django.contrib.auth import authenticate, login, logout
 # Create your views here.
 
@@ -18,8 +19,13 @@ def connect(request):
             login(request, user)
             return redirect('/dashboard')
         else:
-            return HttpResponse("unsuceessfull login")
+            messages.info(request,"Invalid Username or Password")
+            return redirect('/')
     return HttpResponse("Something is wrong")
+
+def solve(request):
+    response=requests.get('https://api.covid19api.com/countries').json()
+    return render(request,'shop/new.html',{'response':response})
 
 def dashboard(request):
     user=User.objects.all()
@@ -31,6 +37,7 @@ def dashboard(request):
 def handellogout(request):
     logout(request)
     return redirect('/dashboard')
+
 
 
 
